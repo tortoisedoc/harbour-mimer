@@ -20,7 +20,8 @@ class MimeObject: public QObject
 public:
     QList<ContentAction::Action> m_actions;
     ContentInfo m_content_info;
-    Q_INVOKABLE getIconPaths();    
+    Q_INVOKABLE getIconPaths();
+    Q_INVOKABLE getDesk
 };
 
 class MimeCache : public QObject

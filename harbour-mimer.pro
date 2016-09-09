@@ -27,6 +27,7 @@ OTHER_FILES += qml/harbour-mimer.qml \
     rpm/harbour-mimer.spec \
     rpm/harbour-mimer.yaml \
     translations/*.ts \
+    qml/pages/data.js \
     harbour-mimer.desktop
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 256x256
@@ -43,4 +44,7 @@ TRANSLATIONS += translations/harbour-mimer-de.ts
 
 HEADERS += \
     src/mimecache.h
+
+DISTFILES += \
+    qml/pages/data.js
 

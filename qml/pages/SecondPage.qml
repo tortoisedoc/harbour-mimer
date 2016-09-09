@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
+  Copyright (C) 2016 GiuliettaSW.
+  Contact: tortoisedoc <users.giulietta@gmail.com>
   All rights reserved.
 
   You may use this file under the terms of BSD license as follows:
@@ -30,29 +30,17 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-
+import "data.js" as Data
 
 Page {
     id: page
-    SilicaListView {
+    Column{
         id: listView
-        model: 20
         anchors.fill: parent
-        header: PageHeader {
-            title: qsTr("Nested Page")
+        Label {
+            x: Theme.paddingLarge
+            text:Data.selectedObject.mime
         }
-        delegate: BackgroundItem {
-            id: delegate
-
-            Label {
-                x: Theme.paddingLarge
-                text: qsTr("Item") + " " + index
-                anchors.verticalCenter: parent.verticalCenter
-                color: delegate.highlighted ? Theme.highlightColor : Theme.primaryColor
-            }
-            onClicked: console.log("Clicked " + index)
-        }
-        VerticalScrollDecorator {}
     }
 }
 

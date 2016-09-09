@@ -1,6 +1,6 @@
 /*
-  Copyright (C) 2013 Jolla Ltd.
-  Contact: Thomas Perl <thomas.perl@jollamobile.com>
+  Copyright (C) 2016 GiuliettaSW.
+  Contact: tortoisedoc <users.giulietta@gmail.com>
   All rights reserved.
 
   You may use this file under the terms of BSD license as follows:
@@ -30,34 +30,57 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "data.js" as Data
 
 Page {
     id: page
+
+    property alias mimes_view:mimesView;
 
     ListModel{
         id:mimesModel;
     }
 
     SilicaListView{
-        id:mimes;
+        id:mimesView;
         model:mimesModel;
         anchors.fill:parent;
-        anchors.leftMargin: 10;
+        anchors.leftMargin: 10;        
+        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        highlightFollowsCurrentItem:true;
+        highlightMoveDuration:0;
         delegate: Item{
+            id:itemDelegate;
             width:parent.width;
             height : Theme.iconSizeMedium;
             Row{
                 anchors.fill: parent;
-                Image{
-                    id:mimeIcon;
-                    width:Theme.iconSizeMedium;
-                    height:Theme.iconSizeMedium;
-                    source:icon;
-                }
-                Label{
-                    width:parent.width - mimeIcon.width;
+                Item{
+                    width:parent.width;
                     height:parent.height;
-                    text:mime;
+                    Image{
+                        id:mimeIcon;
+                        width:Theme.iconSizeMedium;
+                        height:Theme.iconSizeMedium;
+                        source:icon;
+                    }
+                    Label{
+                        width:parent.width - mimeIcon.width;
+                        height:parent.height;
+                        text:mime;
+                    }
+                }
+            }
+            MouseArea{
+                anchors.fill:parent;
+                onPressAndHold:{
+                    Data.selectedObject = mimesModel.get(mimesView.currentIndex);
+                    console.log(Data.selectedObject)
+                    pageStack.push(
+                        Qt.resolvedUrl("SecondPage.qml"))
+                }
+                onEntered:{
+                    mimesView.currentIndex = index;
                 }
             }
         }
@@ -76,13 +99,12 @@ Page {
                     defIcon = imagePaths[0];
                 }
                 mimesModel.append({
+                                      "index": i,
                                       "mime": key,
                                       "icon": defIcon
                                   });
             }
         }
-    }
-    Component.onCompleted: {
     }
 /*
     // To enable PullDownMenu, place our content in a SilicaFlickable

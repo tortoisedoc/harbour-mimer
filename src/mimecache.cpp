@@ -10,27 +10,39 @@
 #include <contentaction5/contentaction.h>
 #include <contentaction5/contentinfo.h>
 
-QMap<QString, QStringList>* s_iconsCache = NULL;
-
 #define DESKTOPS_HOME "/usr/share/applications"
 #define MIME_CACHE DESKTOPS_HOME"/mimeinfo.cache"
 #define CACHE_HEADER "MIME Cache"
+
+
+typedef QMap<QString, MimeObject*> QMimeInfoCache;
+QMimeInfoCache* s_mimeInfoCache = NULL;
+
+void clear_mime_cache(){
+    QMimeInfoCache::iterator tempIter = s_mimeInfoCache->begin();
+    while (tempIter != s_mimeInfoCache->end()){
+        (*tempIter)->m_actions.clear();
+        free(*tempIter);
+        tempIter++;
+    }
+    s_mimeInfoCache->clear();
+}
+
 
 MimeCache::MimeCache(QObject *parent) : QObject(parent){
     m_watcher = new QFileSystemWatcher();
     QString filename = QString(MIME_CACHE);
     m_watcher->addPath(filename);
     m_mimecache = NULL;
-    s_iconsCache = new QMap<QString, QStringList>();
+    s_mimeInfoCache = new QMimeInfoCache();
     connect(m_watcher, SIGNAL(fileChanged(QString)), this,
             SLOT(onMimeCacheChanged()));
 }
 
 MimeCache::~MimeCache(){
-    //disconnect(m_watcher, SIGNAL(fileChanged(QString)), this);
     m_watcher = NULL;
-    s_iconsCache->clear();
-    free(s_iconsCache);
+    clear_mime_cache();
+    delete(s_mimeInfoCache);
 }
 
 void MimeCache::onMimeCacheChanged(){
@@ -40,18 +52,30 @@ void MimeCache::onMimeCacheChanged(){
     }
     m_mimecache = new QSettings(QString(MIME_CACHE),
                                 QSettings::IniFormat, this);
+    clear_mime_cache();
+
+    foreach(QString mime, this->getMimeKeys()){
+        if (s_mimeInfoCache->find(mime) == s_mimeInfoCache->end()){
+            //Defaults are always the first ones..
+
+            s_mime_struct * tempStr = new MimeObject();
+            tempStr->actions = ContentAction::actionsForMime(mime);
+            tempStr->content_info = ContentInfo::forMime(mime);
+        }
+    }
     emit cacheUpdated();
 }
 
 QStringList MimeCache::getMimeKeys(){
-    QStringList keys = QStringList();
     if (m_mimecache){
+        QStringList keys = QStringList();
         m_mimecache->beginGroup(QString(CACHE_HEADER));
         keys = m_mimecache->allKeys();
-        //qDebug()<< keys;
         m_mimecache->endGroup();
+        return keys;
     }
-    return keys;
+    return QStringList();
+
 }
 
 QString MimeCache::getMimeValue(QString key){
@@ -77,31 +101,28 @@ void MimeCache::appendMimeValue(QString key, QString value){
     }
 }
 
-QStringList MimeCache::getIconPathsForMime(QString mime){
-    QStringList picPaths;
-    QStringList desktops;
-    if (mime != ""){
-        if (s_iconsCache->find(mime) == s_iconsCache->end()){
-            //Defaults are always the first ones..
-
-            QList<ContentAction::Action> actions = ContentAction::actionsForMime(mime);
-            ContentInfo tempInfo = ContentInfo::forMime(mime);
-            if (QIcon::hasThemeIcon("icon-l-" +
-                                    tempInfo.typeIcon()))
-                picPaths << QString ("image://theme/icon-l-" +
-                                  tempInfo.typeIcon());
-            else {
-                picPaths << QString ("image://theme/" +
-                               tempInfo.typeIcon());
-            }
-
-            foreach (ContentAction::Action action, actions){
-                desktops << action.name();
-            }
-            qDebug() << picPaths << QString("##") << mime << QString(" // ") << desktops;
-            (*s_iconsCache)[mime] = picPaths;
-            return picPaths;
-        }else return (*s_iconsCache)[mime];
+QVariant MimeCache::getMimeObjectByKey(QString mime){
+    if (s_mimeInfoCache->find(mime) != s_mimeInfoCache->end()){
+        return QVariant((*s_mimeInfoCache)[mime]);
     }
+}
+
+
+QStringList MimeObject::getIconPaths(){
+    QStringList picPaths;
+
+    //Defaults are always the first ones..
+    ContentInfo tempInfo = this->m_content_info;
+    if (QIcon::hasThemeIcon("icon-l-" +
+                            tempInfo.typeIcon()))
+        picPaths << QString ("image://theme/icon-l-" +
+                          tempInfo.typeIcon());
+    else {
+        picPaths << QString ("image://theme/" +
+                       tempInfo.typeIcon());
+    }
+
+    qDebug() << picPaths << QString("##") << mime << QString(" // ") ;
+    return picPaths;
 }
 
