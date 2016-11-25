@@ -2,9 +2,31 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>AppsPage</name>
+    <message>
+        <source>All apps</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CoverPage</name>
     <message>
         <source>My Cover</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SecondPage</name>
+    <message>
+        <source>User-defined</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System Handlers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add User Default..</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

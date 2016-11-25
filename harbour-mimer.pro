@@ -13,13 +13,16 @@
 TARGET = harbour-mimer
 
 CONFIG += link_pkgconfig
+PKGCONFIG += mlite5
 PKGCONFIG += contentaction5
 CONFIG += sailfishapp
 
 SOURCES += src/harbour-mimer.cpp \
-    src/mimecache.cpp
+    src/mimecache.cpp \
+    src/desktopitemsmgr.cpp
 
 OTHER_FILES += qml/harbour-mimer.qml \
+    qml/backend.js \
     qml/cover/CoverPage.qml \
     qml/pages/FirstPage.qml \
     qml/pages/SecondPage.qml \
@@ -27,7 +30,6 @@ OTHER_FILES += qml/harbour-mimer.qml \
     rpm/harbour-mimer.spec \
     rpm/harbour-mimer.yaml \
     translations/*.ts \
-    qml/pages/data.js \
     harbour-mimer.desktop
 
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 256x256
@@ -43,8 +45,12 @@ CONFIG += sailfishapp_i18n
 TRANSLATIONS += translations/harbour-mimer-de.ts
 
 HEADERS += \
-    src/mimecache.h
+    src/mimecache.h \
+    src/desktopitemsmgr.h
 
 DISTFILES += \
-    qml/pages/data.js
+    qml/backend.js \
+    qml/DesktopEntryDelegate.qml \
+    qml/DesktopEntryList.qml \
+    qml/pages/AppsPage.qml
 

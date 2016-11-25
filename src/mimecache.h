@@ -6,22 +6,6 @@
 
 class QFileSystemWatcher;
 class QSettings;
-class QList;
-class ContentAction::Action;
-class ContentInfo;
-
-
-// Stub for QML Mime objects
-class MimeObject: public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QList<ContentAction::Action> actions READ m_actions)
-    Q_PROPERTY(ContentInfo ContentInfo READ m_content_info)
-public:
-    QList<ContentAction::Action> m_actions;
-    ContentInfo m_content_info;
-    Q_INVOKABLE getIconPaths();    
-};
 
 class MimeCache : public QObject
 {
@@ -33,11 +17,8 @@ private:
     QStringList getMimeKeys();
 public:
     explicit MimeCache(QObject *parent = 0);
-    Q_INVOKABLE QString getMimeValue(QString key);
-    Q_INVOKABLE void setMimeValue(QString key, QString value);
-    Q_INVOKABLE QVariant getMimeObjectByKey(QString mime);
-    //Q_INVOKABLE QStringList getIconPathsForMime(QString mime);
-    void appendMimeValue(QString key, QString value);
+    Q_INVOKABLE QStringList getIconPathsForMime(QString mime);
+    Q_INVOKABLE void uncacheMime(QString mime);
     ~MimeCache();
 signals:
     void cacheUpdated();
